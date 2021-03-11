@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FavoriteTextViewEmpty">
+        <item name="android:gravity">center</item>
+        <item name="android:padding">64dp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="CustomSearchProgressView">
+        <item name="android:layout_gravity">end|center</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:indeterminateTint">@android:color/white</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="CustomDialogTextView">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="RepositoryFavoriteButton">
+        <item name="android:layout_gravity">end|top</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/selector_favorite_button</item>
+        <item name="android:textOff">""</item>
+        <item name="android:textOn">""</item>
+        <item name="android:text">""</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+</resources>

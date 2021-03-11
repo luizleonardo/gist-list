@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Gist List</string>
+
+    <string name="main_activity_view_pager_tab_text_gists">Gists</string>
+    <string name="main_activity_view_pager_tab_text_favorite">Favorites</string>
+
+    <string name="fragment_gif_list_search_view_hint">Search here</string>
 </resources>
