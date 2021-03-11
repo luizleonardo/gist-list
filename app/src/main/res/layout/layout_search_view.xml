@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/custom_view_search_content"
     android:layout_width="match_parent"
-    android:layout_height="?android:attr/actionBarSize"
-    android:background="@android:color/black">
+    android:layout_height="46dp"
+    android:background="@color/dark_gray">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/custom_view_search_view"
@@ -15,8 +15,8 @@
 
     <ProgressBar
         android:id="@+id/custom_view_search_view_progress"
+        style="@style/CustomSearchProgressView"
         android:layout_width="20dp"
-        android:layout_height="20dp"
-        style="@style/CustomSearchProgressView" />
+        android:layout_height="20dp" />
 
 </FrameLayout>

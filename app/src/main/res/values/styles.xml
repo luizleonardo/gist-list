@@ -30,4 +30,17 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="circleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ListItemGistFavoriteButton">
+        <item name="android:background">@drawable/selector_favorite_button</item>
+        <item name="android:textOff">""</item>
+        <item name="android:textOn">""</item>
+        <item name="android:text">""</item>
+        <item name="android:visibility">visible</item>
+    </style>
+
 </resources>

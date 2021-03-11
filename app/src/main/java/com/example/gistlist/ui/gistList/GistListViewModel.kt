@@ -1,4 +1,4 @@
-package com.example.gistlist.ui.repos
+package com.example.gistlist.ui.gistList
 
 import androidx.lifecycle.LifecycleObserver
 import com.example.gistlist.data.entities.GistItem

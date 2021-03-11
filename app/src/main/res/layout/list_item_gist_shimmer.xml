@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?><?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_item_gist_shimmer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/list_item_gist_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        app:cardCornerRadius="3dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/list_item_gist_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/list_item_gist_owner_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/list_item_gist_button_favorite"
+                app:layout_constraintStart_toEndOf="@+id/list_item_gist_owner_avatar"
+                app:layout_constraintTop_toTopOf="@+id/list_item_gist_content"
+                tools:text="Fulano de tal" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/list_item_gist_type"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintEnd_toEndOf="@+id/list_item_gist_owner_name"
+                app:layout_constraintStart_toStartOf="@+id/list_item_gist_owner_name"
+                app:layout_constraintTop_toBottomOf="@+id/list_item_gist_owner_name"
+                tools:text="json" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/list_item_gist_owner_avatar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                app:layout_constraintStart_toStartOf="@+id/list_item_gist_content"
+                app:layout_constraintTop_toTopOf="@+id/list_item_gist_content"
+                app:shapeAppearanceOverlay="@style/circleImageView" />
+
+            <androidx.appcompat.widget.AppCompatToggleButton
+                android:id="@+id/list_item_gist_button_favorite"
+                style="@style/ListItemGistFavoriteButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintEnd_toEndOf="@+id/list_item_gist_content"
+                app:layout_constraintTop_toTopOf="@+id/list_item_gist_content" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.gistlist.R
 import com.example.gistlist.ui.favorites.FavoritesFragment
-import com.example.gistlist.ui.repos.RepositoriesFragment
+import com.example.gistlist.ui.gistList.RepositoriesFragment
 
 val TAB_TITLES = arrayOf(
     R.string.main_activity_view_pager_tab_text_gists,
