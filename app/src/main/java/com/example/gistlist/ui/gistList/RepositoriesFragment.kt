@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
+import com.example.gistlist.ext.gone
+import com.example.gistlist.ext.startShowAnimation
+import com.example.gistlist.ext.visible
 import com.example.gistlist.ui.ViewData
 import com.example.gistlist.ui.base.BaseFragment
 import com.example.gistlist.ui.favorites.FavoriteViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_repositories.*
 import kotlinx.android.synthetic.main.fragment_repositories.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -32,9 +34,6 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
     private val favoriteViewModel: FavoriteViewModel by viewModel()
 
     private val gistListAdapter = GistListAdapter(this@RepositoriesFragment)
-
-    private var snackBar: Snackbar? = null
-    private var alertDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +58,6 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
     override fun setupView(view: View) {
         super.setupView(view)
         setupSnackBar(view)
-        setupAlertDialog(view)
         setupRecyclerView(view)
         gistListViewModel.fetchPublicGists()
     }
@@ -77,12 +75,6 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
         }
     }
 
-    private fun setupAlertDialog(view: View) {
-        val builder = AlertDialog.Builder(view.context)
-        builder.setView(layoutInflater.inflate(R.layout.custom_dialog, null))
-        alertDialog = builder.create()
-    }
-
     private fun setupSnackBar(view: View) {
         snackBar = Snackbar.make(
             view.fragment_repositories_content_holder,
@@ -91,32 +83,23 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
         )
     }
 
-    private fun showProgressDialog(message: String) {
-        view?.context?.let {
-            alertDialog?.show()
-            alertDialog?.findViewById<AppCompatTextView>(R.id.text_progress_bar)?.text = message
-        }
-    }
-
-    private fun dismissProgress() {
-        view?.context?.let {
-            alertDialog?.dismiss()
-        }
-    }
-
     private fun observePublicGistList(gistListViewModel: GistListViewModel) {
         gistListViewModel.liveDataGists.observe(
             viewLifecycleOwner, {
                 when (it?.status) {
                     ViewData.Status.LOADING -> {
-                        Toast.makeText(context, "LOADING", Toast.LENGTH_SHORT).show()
+                        fragment_gist_list_progress_bar.visible()
+                        fragment_gist_list_recycler_view.gone()
                     }
                     ViewData.Status.COMPLETE -> {
-                        Toast.makeText(context, "COMPLETE", Toast.LENGTH_SHORT).show()
+                        fragment_gist_list_progress_bar.gone()
+                        fragment_gist_list_recycler_view.visible()
+                        fragment_gist_list_recycler_view.startShowAnimation()
                         gistListAdapter.submitList(it.data)
                     }
                     ViewData.Status.ERROR -> {
-                        Toast.makeText(context, "ERROR", Toast.LENGTH_SHORT).show()
+                        fragment_gist_list_progress_bar.gone()
+                        fragment_gist_list_recycler_view.gone()
                     }
                 }
             }

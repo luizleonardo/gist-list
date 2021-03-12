@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_repositories_content_holder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,16 +18,22 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/fragment_gist_list_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:alpha="0"
+            android:visibility="gone"
+            tools:alpha="1"
+            tools:listitem="@layout/list_item_gist"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/fragment_favorite_progress_bar"
+        android:id="@+id/fragment_gist_list_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:indeterminateTint="@android:color/white"
+        android:indeterminateTint="@color/primaryDarkColor"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/fragment_repositories_content"
         app:layout_constraintEnd_toEndOf="@id/fragment_repositories_content"
         app:layout_constraintStart_toStartOf="@id/fragment_repositories_content"
