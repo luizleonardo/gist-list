@@ -1,5 +1,6 @@
 package com.example.gistlist.ui.gistList
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,33 +21,36 @@ import com.example.gistlist.ext.startShowAnimation
 import com.example.gistlist.ext.visible
 import com.example.gistlist.ui.ViewData
 import com.example.gistlist.ui.base.BaseFragment
+import com.example.gistlist.ui.detail.DetailActivity
+import com.example.gistlist.ui.detail.DetailActivity.Companion.GIST_ITEM_EXTRA
 import com.example.gistlist.ui.favorites.FavoriteViewModel
 import com.example.gistlist.ui.gistList.RxSearchObservable.DEBOUNCE
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.fragment_repositories.*
-import kotlinx.android.synthetic.main.fragment_repositories.view.*
+import kotlinx.android.synthetic.main.fragment_gist_list.*
+import kotlinx.android.synthetic.main.fragment_gist_list.view.*
 import kotlinx.android.synthetic.main.layout_search_view.*
 import kotlinx.android.synthetic.main.layout_search_view.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback {
+class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
+    GistListViewHolder.GistItemCallback {
 
     companion object {
         @JvmStatic
-        fun newInstance(): RepositoriesFragment = RepositoriesFragment()
+        fun newInstance(): GistListFragment = GistListFragment()
     }
 
-    override fun layoutResource(): Int = R.layout.fragment_repositories
+    override fun layoutResource(): Int = R.layout.fragment_gist_list
 
     private val gistListViewModel: GistListViewModel by viewModel()
     private val favoriteViewModel: FavoriteViewModel by viewModel()
 
-    private val gistListAdapter = GistListAdapter(this@RepositoriesFragment)
+    private val gistListAdapter = GistListAdapter(this@GistListFragment, this@GistListFragment)
 
     private val compositeDisposable = CompositeDisposable()
     private var lastSearch: String? = null
@@ -72,6 +76,11 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
         }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        gistListViewModel.fetchPublicGists()
     }
 
     override fun setupView(view: View) {
@@ -125,7 +134,7 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
                     gistListViewModel.search(username = it)
                 },
                 {
-                    // TODO show error
+                    showSnackbar(getString(R.string.generic_error))
                 })
         )
     }
@@ -145,10 +154,17 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
 
     private fun setupSnackBar(view: View) {
         snackBar = Snackbar.make(
-            view.fragment_repositories_content_holder,
+            view.fragment_gist_list_content_holder,
             "",
             Snackbar.LENGTH_SHORT
         )
+    }
+
+    private fun showSnackbar(message: String?) {
+        snackBar?.run {
+            if (!isShown) this.show() else this.dismiss()
+            this.view.findViewById<AppCompatTextView>(R.id.snackbar_text).text = message
+        }
     }
 
     private fun observePublicGistList(gistListViewModel: GistListViewModel) {
@@ -182,18 +198,11 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
                 }
                 ViewData.Status.SUCCESS -> {
                     dismissProgress()
-                    snackBar?.run {
-                        if (!isShown) this.show()
-                        this.view.findViewById<AppCompatTextView>(R.id.snackbar_text).text = it.data
-                    }
+                    showSnackbar(it.data)
                 }
                 ViewData.Status.ERROR -> {
                     dismissProgress()
-                    snackBar?.run {
-                        this.view.findViewById<AppCompatTextView>(R.id.snackbar_text).text =
-                            it.error?.message
-                        if (!isShown) this.show() else this.dismiss()
-                    }
+                    showSnackbar(it.error?.message)
                 }
             }
         })
@@ -205,7 +214,6 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
                 when (it?.status) {
                     ViewData.Status.LOADING -> {
                         custom_view_search_view_progress.visible()
-                        //fragment_gist_list_recycler_view.gone()
                         appCompatImageViewClose?.gone()
                     }
                     ViewData.Status.COMPLETE -> {
@@ -232,5 +240,11 @@ class RepositoriesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback
 
     override fun onFavoriteRemove(data: GistItem) {
         favoriteViewModel.removeFavorite(data)
+    }
+
+    override fun onGistItemClick(data: GistItem) {
+        startActivity(Intent(context, DetailActivity::class.java).also {
+            it.putExtra(GIST_ITEM_EXTRA, data)
+        })
     }
 }

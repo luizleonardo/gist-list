@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.gistlist.R
 import com.example.gistlist.ui.favorites.FavoritesFragment
-import com.example.gistlist.ui.gistList.RepositoriesFragment
+import com.example.gistlist.ui.gistList.GistListFragment
 
 val TAB_TITLES = arrayOf(
     R.string.main_activity_view_pager_tab_text_gists,
@@ -21,6 +21,6 @@ class MainPagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
     }
 
     override fun createFragment(position: Int): Fragment {
-        return if (position == 0) RepositoriesFragment.newInstance() else FavoritesFragment.newInstance()
+        return if (position == 0) GistListFragment.newInstance() else FavoritesFragment.newInstance()
     }
 }

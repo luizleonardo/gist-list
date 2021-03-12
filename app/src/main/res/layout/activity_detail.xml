@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_detail_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.main.MainActivity">
+
+    <include layout="@layout/layout_toolbar" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/activity_detail_owner_avatar"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        app:layout_constraintBottom_toBottomOf="@+id/activity_detail_root"
+        app:layout_constraintEnd_toEndOf="@+id/activity_detail_root"
+        app:layout_constraintStart_toStartOf="@+id/activity_detail_root"
+        app:layout_constraintTop_toTopOf="@+id/activity_detail_root"
+        app:layout_constraintVertical_bias=".2"
+        app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+    <androidx.appcompat.widget.AppCompatToggleButton
+        android:id="@+id/activity_detail_button_favorite"
+        style="@style/ListItemGistFavoriteButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintEnd_toEndOf="@+id/activity_detail_owner_avatar"
+        app:layout_constraintHorizontal_bias=".9"
+        app:layout_constraintStart_toStartOf="@+id/activity_detail_owner_avatar"
+        app:layout_constraintTop_toTopOf="@+id/activity_detail_owner_avatar" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/activity_detail_owner_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/activity_detail_root"
+        app:layout_constraintStart_toStartOf="@+id/activity_detail_root"
+        app:layout_constraintTop_toBottomOf="@+id/activity_detail_owner_avatar"
+        tools:text="Fulano de tal" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/activity_detail_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/activity_detail_owner_name"
+        app:layout_constraintStart_toStartOf="@+id/activity_detail_owner_name"
+        app:layout_constraintTop_toBottomOf="@+id/activity_detail_owner_name"
+        tools:text="json" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/activity_detail_filename"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/activity_detail_owner_name"
+        app:layout_constraintStart_toStartOf="@+id/activity_detail_owner_name"
+        app:layout_constraintTop_toBottomOf="@+id/activity_detail_type"
+        tools:text="json" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/activity_detail_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/activity_detail_owner_name"
+        app:layout_constraintStart_toStartOf="@+id/activity_detail_owner_name"
+        app:layout_constraintTop_toBottomOf="@+id/activity_detail_filename"
+        tools:text="json" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

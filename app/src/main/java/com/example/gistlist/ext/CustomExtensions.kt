@@ -6,6 +6,9 @@ import android.animation.PropertyValuesHolder
 import android.view.View
 import android.view.View.ALPHA
 import android.view.View.TRANSLATION_Y
+import android.view.animation.Animation.*
+import android.view.animation.BounceInterpolator
+import android.view.animation.ScaleAnimation
 
 fun View.gone(): View {
     this.visibility = View.GONE
@@ -35,3 +38,17 @@ fun View.startShowAnimation() {
 
     animatorSet.start()
 }
+
+fun View.scaleAnimation() = ScaleAnimation(
+    0.7f,
+    1.0f,
+    0.7f,
+    1.0f,
+    RELATIVE_TO_SELF,
+    0.7f,
+    RELATIVE_TO_SELF,
+    0.7f
+).also {
+    it.duration = 500
+    it.interpolator = BounceInterpolator()
+}.start()

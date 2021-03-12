@@ -10,12 +10,7 @@ class MainActivity : BaseActivity() {
     override fun layoutResource(): Int = R.layout.activity_main
 
     override fun setupView() {
-        setupToolbar()
         setupViewPager()
-    }
-
-    private fun setupToolbar() {
-        setSupportActionBar(findViewById(R.id.main_activity_toolbar))
     }
 
     private fun setupViewPager() {

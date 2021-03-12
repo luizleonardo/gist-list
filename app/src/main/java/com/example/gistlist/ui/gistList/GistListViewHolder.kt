@@ -1,22 +1,24 @@
 package com.example.gistlist.ui.gistList
 
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.BounceInterpolator
-import android.view.animation.ScaleAnimation
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
+import com.example.gistlist.ext.scaleAnimation
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso.Picasso
 
 class GistListViewHolder(
     itemView: View,
-    private val favoriteCallback: FavoriteCallback?
+    private val favoriteCallback: FavoriteCallback?,
+    private val gistItemCallback: GistItemCallback?,
 ) : RecyclerView.ViewHolder(itemView) {
 
+    private val content: MaterialCardView =
+        itemView.findViewById(R.id.list_item_gist_card_view)
     private val ownerAvatar: ShapeableImageView =
         itemView.findViewById(R.id.list_item_gist_owner_avatar)
     private val ownerName: AppCompatTextView =
@@ -28,25 +30,14 @@ class GistListViewHolder(
     private val favoriteButton: AppCompatToggleButton =
         itemView.findViewById(R.id.list_item_gist_button_favorite)
 
-    private val scaleAnimation = ScaleAnimation(
-        0.7f,
-        1.0f,
-        0.7f,
-        1.0f,
-        Animation.RELATIVE_TO_SELF,
-        0.7f,
-        Animation.RELATIVE_TO_SELF,
-        0.7f
-    ).also {
-        it.duration = 500
-        it.interpolator = BounceInterpolator()
-    }
-
     fun bind(data: GistItem) {
+        itemView.setOnClickListener {
+            gistItemCallback?.onGistItemClick(data)
+        }
         favoriteButton.setOnCheckedChangeListener(null)
         favoriteButton.isChecked = data.isFavorite
         favoriteButton.setOnCheckedChangeListener { button, checked ->
-            button?.startAnimation(scaleAnimation)
+            button.scaleAnimation()
             if (checked) {
                 favoriteCallback?.onFavoriteAdd(data)
                 return@setOnCheckedChangeListener
@@ -68,6 +59,10 @@ class GistListViewHolder(
     interface FavoriteCallback {
         fun onFavoriteAdd(data: GistItem)
         fun onFavoriteRemove(data: GistItem)
+    }
+
+    interface GistItemCallback {
+        fun onGistItemClick(data: GistItem)
     }
 
 }

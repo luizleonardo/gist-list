@@ -7,7 +7,7 @@
     android:theme="@style/Theme.GistList.AppBarOverlay">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/main_activity_toolbar"
+        android:id="@+id/layout_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primaryColor"

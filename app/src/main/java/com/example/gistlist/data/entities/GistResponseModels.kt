@@ -1,15 +1,15 @@
 package com.example.gistlist.data.entities
 
+import android.os.Parcelable
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 import java.lang.reflect.Type
 
-
-data class GistResponseHolder(val data: List<GistItem>)
-
+@Parcelize
 data class GistItem(
     var id: String? = null,
     var url: String? = null,
@@ -17,18 +17,21 @@ data class GistItem(
     val owner: GistOwner? = null,
     val files: GistFileList? = null,
     var isFavorite: Boolean = false
-)
+) : Parcelable
 
+@Parcelize
 data class GistOwner(
     val login: String? = null,
     var id: String? = null,
     @SerializedName("avatar_url")
     var avatarUrl: String? = null,
-)
+) : Parcelable
 
-data class GistFileList(val fileList: List<GistFile>)
+@Parcelize
+data class GistFileList(val fileList: List<GistFile>) : Parcelable
 
-data class GistFile(val filename: String? = null, val type: String? = null)
+@Parcelize
+data class GistFile(val filename: String? = null, val type: String? = null) : Parcelable
 
 class GistFileDeserializer : JsonDeserializer<GistFileList?> {
     @Throws(JsonParseException::class)
