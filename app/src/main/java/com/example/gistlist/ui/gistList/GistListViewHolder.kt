@@ -58,7 +58,7 @@ class GistListViewHolder(
             .fit()
             .into(ownerAvatar)
         ownerName.text = data.owner?.login
-        gistType.text = data.description
+        gistType.text = data.files?.fileList?.firstOrNull()?.type
     }
 
 

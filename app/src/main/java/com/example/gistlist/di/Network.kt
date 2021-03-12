@@ -1,6 +1,8 @@
 package com.example.gistlist.di
 
 import com.example.gistlist.BuildConfig
+import com.example.gistlist.data.entities.GistFileDeserializer
+import com.example.gistlist.data.entities.GistFileList
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.Interceptor
@@ -42,7 +44,7 @@ private fun httpClient(): OkHttpClient {
     return clientBuilder.build()
 }
 
-val gson: Gson = GsonBuilder().setLenient().create()
+val gson: Gson = GsonBuilder().registerTypeAdapter(GistFileList::class.java, GistFileDeserializer()).setLenient().create()
 
 private fun retrofitClient(baseUrl: String, httpClient: OkHttpClient): Retrofit =
     Retrofit.Builder()

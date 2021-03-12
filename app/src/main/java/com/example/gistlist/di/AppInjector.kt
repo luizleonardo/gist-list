@@ -7,7 +7,8 @@ import com.example.gistlist.data.dao.GistDao
 import com.example.gistlist.data.dao.GistDatabase
 import com.example.gistlist.data.repository.GistRepository
 import com.example.gistlist.data.repository.RoomRepository
-import com.example.gistlist.ui.repos.GistListViewModel
+import com.example.gistlist.ui.favorites.FavoriteViewModel
+import com.example.gistlist.ui.gistList.GistListViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -47,7 +48,7 @@ val viewModels = module {
     viewModel {
         GistListViewModel(get(), get())
     }
-   /* viewModel {
+    viewModel {
         FavoriteViewModel(get())
-    }*/
+    }
 }

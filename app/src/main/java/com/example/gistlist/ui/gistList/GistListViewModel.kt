@@ -21,9 +21,9 @@ class GistListViewModel(
 
     val liveDataSearch = LiveEvent<ViewData<List<GistItem>>>()
 
-    fun fetchPublicGists(limit: Int? = null, offset: Int? = null) {
+    fun fetchPublicGists(perPage: Int? = null, page: Int? = null) {
         compositeDisposable.add(
-            giphyRepository.fetchPublicGists(25, 0)
+            giphyRepository.fetchPublicGists(perPage, page)
                 .flatMap(
                     {
                         return@flatMap roomRepository.updateGistItem(it)

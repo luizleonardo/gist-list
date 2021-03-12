@@ -15,13 +15,15 @@ data class GistData(
     var description: String? = null,
     @Embedded
     val owner: OwnerData? = null,
+    @ColumnInfo(name = "file_type")
+    val fileType: String? = null
 )
 
 data class OwnerData(
-    @ColumnInfo(name = "login")
+    @ColumnInfo(name = "owner_login")
     val login: String? = null,
     @ColumnInfo(name = "owner_id")
     var id: String? = null,
-    @ColumnInfo(name = "avatar_url")
+    @ColumnInfo(name = "owner_avatar_url")
     var avatarUrl: String? = null,
 )
