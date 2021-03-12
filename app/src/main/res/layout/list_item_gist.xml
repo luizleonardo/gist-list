@@ -24,6 +24,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/list_item_gist_button_favorite"
             app:layout_constraintStart_toEndOf="@+id/list_item_gist_owner_avatar"
             app:layout_constraintTop_toTopOf="@+id/list_item_gist_content"
@@ -33,19 +37,37 @@
             android:id="@+id/list_item_gist_type"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="@+id/list_item_gist_owner_name"
             app:layout_constraintStart_toStartOf="@+id/list_item_gist_owner_name"
             app:layout_constraintTop_toBottomOf="@+id/list_item_gist_owner_name"
+            tools:text="json" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/list_item_gist_filename"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/list_item_gist_content"
+            app:layout_constraintEnd_toEndOf="@+id/list_item_gist_owner_name"
+            app:layout_constraintStart_toStartOf="@+id/list_item_gist_owner_name"
+            app:layout_constraintTop_toBottomOf="@+id/list_item_gist_type"
             tools:text="json" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/list_item_gist_owner_avatar"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            app:layout_constraintBottom_toBottomOf="@+id/list_item_gist_content"
             app:layout_constraintStart_toStartOf="@+id/list_item_gist_content"
             app:layout_constraintTop_toTopOf="@+id/list_item_gist_content"
-            app:shapeAppearanceOverlay="@style/circleImageView" />
+            app:shapeAppearanceOverlay="@style/CircleImageView" />
 
         <androidx.appcompat.widget.AppCompatToggleButton
             android:id="@+id/list_item_gist_button_favorite"

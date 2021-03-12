@@ -50,7 +50,7 @@
                 android:layout_height="64dp"
                 app:layout_constraintStart_toStartOf="@+id/list_item_gist_content"
                 app:layout_constraintTop_toTopOf="@+id/list_item_gist_content"
-                app:shapeAppearanceOverlay="@style/circleImageView" />
+                app:shapeAppearanceOverlay="@style/CircleImageView" />
 
             <androidx.appcompat.widget.AppCompatToggleButton
                 android:id="@+id/list_item_gist_button_favorite"

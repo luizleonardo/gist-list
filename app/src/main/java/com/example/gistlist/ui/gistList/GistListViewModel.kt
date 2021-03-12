@@ -54,9 +54,9 @@ class GistListViewModel(
         )
     }
 
-/*    fun search(limit: Int? = null, offset: Int? = null, query: String?) {
+    fun search(username: String?, perPage: Int? = null, page: Int? = null) {
         compositeDisposable.add(
-            giphyRepository.search(limit, offset, query)
+            giphyRepository.search(username, perPage, page)
                 .flatMap(
                     {
                         return@flatMap roomRepository.updateGistItem(it)
@@ -85,6 +85,6 @@ class GistListViewModel(
 
                 })
         )
-    }*/
+    }
 
 }
