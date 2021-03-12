@@ -40,7 +40,6 @@ allprojects {
         roomVersion = '2.2.6'
         coroutinesAdapterVersion = '0.9.2'
         picassoVersion = '2.71828'
-        shimmerVersion = '0.5.0'
         recyclerViewVersion = '1.2.0-beta02'
     }
 }

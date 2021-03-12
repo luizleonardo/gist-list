@@ -1,5 +1,6 @@
 package com.example.gistlist.ui.gistList
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -37,10 +38,13 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+
 class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
     GistListViewHolder.GistItemCallback {
 
     companion object {
+        const val DETAIL_REQUEST_CODE = 1
+
         @JvmStatic
         fun newInstance(): GistListFragment = GistListFragment()
     }
@@ -56,6 +60,11 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
     private var lastSearch: String? = null
     private var appCompatImageViewClose: AppCompatImageView? = null
     private var searchViewEditText: EditText? = null
+
+    // load more
+    var visibleItemCount: Int = 0
+    var totalItemCount: Int = 0
+    var page = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,17 +87,12 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        gistListViewModel.fetchPublicGists()
-    }
-
     override fun setupView(view: View) {
         super.setupView(view)
         setupSnackBar(view)
         setupRecyclerView(view)
         setupSearchView(view)
-        gistListViewModel.fetchPublicGists()
+        gistListViewModel.fetchPublicGists(page = page)
     }
 
     private fun setupSearchView(view: View) {
@@ -242,9 +246,18 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         favoriteViewModel.removeFavorite(data)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == DETAIL_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                gistListAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
     override fun onGistItemClick(data: GistItem) {
-        startActivity(Intent(context, DetailActivity::class.java).also {
+        startActivityForResult(Intent(context, DetailActivity::class.java).also {
             it.putExtra(GIST_ITEM_EXTRA, data)
-        })
+        }, DETAIL_REQUEST_CODE)
     }
 }

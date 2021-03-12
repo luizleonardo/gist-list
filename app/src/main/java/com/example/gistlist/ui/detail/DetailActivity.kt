@@ -47,6 +47,7 @@ class DetailActivity : BaseActivity() {
             activity_detail_button_favorite.isChecked = this.isFavorite
             activity_detail_button_favorite.setOnCheckedChangeListener { _, checked ->
                 activity_detail_button_favorite.scaleAnimation()
+                setResult(RESULT_OK)
                 if (checked) {
                     favoriteViewModel.addFavorite(this)
                     return@setOnCheckedChangeListener

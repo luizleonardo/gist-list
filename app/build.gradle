@@ -37,6 +37,9 @@ android {
             shrinkResources false
             debuggable true
             crunchPngs false
+
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
         }
     }
     compileOptions {
@@ -59,7 +62,6 @@ dependencies {
     implementation "com.google.android.material:material:$project.ext.materialVersion"
     implementation "androidx.constraintlayout:constraintlayout:$project.ext.constraintLayoutVersion"
     implementation "com.squareup.picasso:picasso:$project.ext.picassoVersion"
-    implementation "com.facebook.shimmer:shimmer:$project.ext.shimmerVersion"
     implementation "androidx.recyclerview:recyclerview:$project.ext.recyclerViewVersion"
 
     // Network Retrofit stuff
