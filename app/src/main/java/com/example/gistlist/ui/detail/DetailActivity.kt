@@ -1,6 +1,7 @@
 package com.example.gistlist.ui.detail
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
@@ -37,6 +38,10 @@ class DetailActivity : BaseActivity() {
     }
 
     override fun setupView() {
+        supportActionBar?.run {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+        }
         gistItem?.run {
             Picasso.get().load(this.owner?.avatarUrl).into(activity_detail_owner_avatar)
             activity_detail_description.text = this.description
@@ -62,7 +67,7 @@ class DetailActivity : BaseActivity() {
         favoriteViewModel.liveDataAddFavorite.observe(this, {
             when (it?.status) {
                 ViewData.Status.LOADING -> {
-                    showProgressDialog(it.data ?: "Loading")
+                    showProgressDialog(it.data ?: getString(R.string.dialog_loading))
                 }
                 ViewData.Status.SUCCESS -> {
                     dismissProgress()
@@ -74,6 +79,13 @@ class DetailActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

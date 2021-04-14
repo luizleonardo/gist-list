@@ -17,13 +17,22 @@ class GistListViewModel(
     private val roomRepository: RoomRepository
 ) : BaseViewModel(), LifecycleObserver {
 
+    companion object {
+        const val DEFAULT_PER_PAGE = 15
+        const val DEFAULT_PAGE_START = 0
+    }
+
     val liveDataGists = LiveEvent<ViewData<List<GistItem>>>()
+
+    val liveDataGistsPagination = LiveEvent<ViewData<List<GistItem>>>()
 
     val liveDataSearch = LiveEvent<ViewData<List<GistItem>>>()
 
-    fun fetchPublicGists(perPage: Int? = null, page: Int? = null) {
+    val liveDataSearchPagination = LiveEvent<ViewData<List<GistItem>>>()
+
+    fun fetchPublicGists() {
         compositeDisposable.add(
-            giphyRepository.fetchPublicGists(perPage, page)
+            giphyRepository.fetchPublicGists(DEFAULT_PER_PAGE, DEFAULT_PAGE_START)
                 .flatMap(
                     {
                         return@flatMap roomRepository.updateGistItem(it)
@@ -54,9 +63,42 @@ class GistListViewModel(
         )
     }
 
-    fun search(username: String?, perPage: Int? = null, page: Int? = null) {
+    fun fetchPublicGistsPagination(perPage: Int = DEFAULT_PER_PAGE, page: Int = DEFAULT_PAGE_START) {
         compositeDisposable.add(
-            giphyRepository.search(username, perPage, page)
+            giphyRepository.fetchPublicGists(perPage, page)
+                .flatMap(
+                    {
+                        return@flatMap roomRepository.updateGistItem(it)
+                    },
+                    { _: List<GistItem>, updatedList: List<GistItem> ->
+                        updatedList
+                    }
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { liveDataGistsPagination.postValue(ViewData(LOADING)) }
+                .subscribeWith(object : DisposableObserver<List<GistItem>>() {
+                    override fun onNext(response: List<GistItem>) {
+                        liveDataGistsPagination.value =
+                            ViewData(status = SUCCESS, data = response)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        liveDataGistsPagination.value = ViewData(ERROR, error = error)
+                    }
+
+                    override fun onComplete() {
+                        liveDataGistsPagination.value =
+                            ViewData(status = COMPLETE, data = liveDataGists.value?.data)
+                    }
+
+                })
+        )
+    }
+
+    fun searchByUsername(username: String?) {
+        compositeDisposable.add(
+            giphyRepository.search(username, DEFAULT_PER_PAGE, DEFAULT_PAGE_START)
                 .flatMap(
                     {
                         return@flatMap roomRepository.updateGistItem(it)
@@ -83,6 +125,38 @@ class GistListViewModel(
                             ViewData(status = COMPLETE, data = liveDataSearch.value?.data)
                     }
 
+                })
+        )
+    }
+
+    fun searchByUsernamePagination(username: String?, perPage: Int = DEFAULT_PER_PAGE, page: Int = DEFAULT_PAGE_START) {
+        compositeDisposable.add(
+            giphyRepository.search(username, perPage, page)
+                .flatMap(
+                    {
+                        return@flatMap roomRepository.updateGistItem(it)
+                    },
+                    { _: List<GistItem>, updatedList: List<GistItem> ->
+                        updatedList
+                    }
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { liveDataSearchPagination.postValue(ViewData(LOADING)) }
+                .subscribeWith(object : DisposableObserver<List<GistItem>>() {
+                    override fun onNext(response: List<GistItem>) {
+                        liveDataSearchPagination.value =
+                            ViewData(status = SUCCESS, data = response)
+                    }
+
+                    override fun onError(error: Throwable) {
+                        liveDataSearchPagination.value = ViewData(ERROR, error = error)
+                    }
+
+                    override fun onComplete() {
+                        liveDataSearchPagination.value =
+                            ViewData(status = COMPLETE, data = liveDataSearch.value?.data)
+                    }
                 })
         )
     }

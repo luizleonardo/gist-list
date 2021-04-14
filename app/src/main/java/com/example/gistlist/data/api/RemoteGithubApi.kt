@@ -10,15 +10,15 @@ interface RemoteGithubApi {
 
     @GET("gists/public")
     fun getPublicGists(
-        @Query("per_page") perPage: Int? = 25,
-        @Query("page") page: Int? = 0,
+        @Query("per_page") perPage: Int = 25,
+        @Query("page") page: Int = 0,
     ): Observable<List<GistItem>>
 
     @GET("/users/{username}/gists")
     fun searchGistByUsername(
         @Path("username") username: String?,
-        @Query("per_page") perPage: Int? = 25,
-        @Query("page") page: Int? = 0,
+        @Query("per_page") perPage: Int = 25,
+        @Query("page") page: Int = 0,
     ): Observable<List<GistItem>>
 
 }

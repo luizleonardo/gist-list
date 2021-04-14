@@ -12,7 +12,6 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SearchView
-import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
@@ -38,9 +37,8 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
 class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
-    GistListViewHolder.GistItemCallback {
+    GistListViewHolder.GistItemCallback, TextWatcher {
 
     companion object {
         const val DETAIL_REQUEST_CODE = 1
@@ -54,17 +52,15 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
     private val gistListViewModel: GistListViewModel by viewModel()
     private val favoriteViewModel: FavoriteViewModel by viewModel()
 
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var endlessRecyclerViewScrollListener: EndlessRecyclerViewScrollListener
+
     private val gistListAdapter = GistListAdapter(this@GistListFragment, this@GistListFragment)
 
     private val compositeDisposable = CompositeDisposable()
     private var lastSearch: String? = null
     private var appCompatImageViewClose: AppCompatImageView? = null
     private var searchViewEditText: EditText? = null
-
-    // load more
-    var visibleItemCount: Int = 0
-    var totalItemCount: Int = 0
-    var page = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,7 +72,9 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         with(gistListViewModel) {
             viewLifecycleOwner.lifecycle.addObserver(this)
             observePublicGistList(this)
+            observePublicGistListPagination(this)
             observeSearch(this)
+            observeSearchPagination(this)
         }
 
         with(favoriteViewModel) {
@@ -92,7 +90,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         setupSnackBar(view)
         setupRecyclerView(view)
         setupSearchView(view)
-        gistListViewModel.fetchPublicGists(page = page)
+        gistListViewModel.fetchPublicGists()
     }
 
     private fun setupSearchView(view: View) {
@@ -101,22 +99,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
             appCompatImageViewClose =
                 this.findViewById(R.id.search_close_btn) as? AppCompatImageView
             searchViewEditText = this.findViewById(R.id.search_src_text) as? EditText
-            searchViewEditText?.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if (s.isNullOrEmpty()) gistListViewModel.fetchPublicGists()
-                }
-
-                override fun afterTextChanged(s: Editable?) {
-                }
-            })
+            searchViewEditText?.addTextChangedListener(this@GistListFragment)
             if (!lastSearch.isNullOrEmpty()) {
                 setQuery(lastSearch, false)
                 appCompatImageViewClose?.visible()
@@ -135,7 +118,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
             .subscribe(
                 {
                     this.lastSearch = it
-                    gistListViewModel.search(username = it)
+                    gistListViewModel.searchByUsername(username = it)
                 },
                 {
                     showSnackbar(getString(R.string.generic_error))
@@ -145,14 +128,24 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
 
     private fun setupRecyclerView(view: View) {
         view.fragment_gist_list_recycler_view.apply {
-            val concatAdapter = ConcatAdapter(
-                gistListAdapter,
-            )
-            layoutManager = LinearLayoutManager(
+            setHasFixedSize(true)
+            linearLayoutManager = LinearLayoutManager(
                 view.context,
                 RecyclerView.VERTICAL, false
             )
-            adapter = concatAdapter
+            endlessRecyclerViewScrollListener =
+                object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
+                    override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                        if (!lastSearch.isNullOrEmpty()) {
+                            gistListViewModel.searchByUsernamePagination(username = lastSearch, page = page)
+                            return
+                        }
+                        gistListViewModel.fetchPublicGistsPagination(page = page)
+                    }
+                }
+            layoutManager = linearLayoutManager
+            adapter = gistListAdapter
+            addOnScrollListener(endlessRecyclerViewScrollListener)
         }
     }
 
@@ -183,6 +176,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
                         fragment_gist_list_progress_bar.gone()
                         fragment_gist_list_recycler_view.visible()
                         fragment_gist_list_recycler_view.startShowAnimation()
+                        endlessRecyclerViewScrollListener.resetState()
                         gistListAdapter.submitList(it.data)
                     }
                     ViewData.Status.ERROR -> {
@@ -194,11 +188,51 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         )
     }
 
+    private fun observePublicGistListPagination(gistListViewModel: GistListViewModel) {
+        gistListViewModel.liveDataGistsPagination.observe(
+            viewLifecycleOwner, {
+                when (it?.status) {
+                    ViewData.Status.LOADING -> {
+                        fragment_gist_list_progress_bar.visible()
+                    }
+                    ViewData.Status.COMPLETE -> {
+                        fragment_gist_list_progress_bar.gone()
+                        val updatedGistList = gistListAdapter.currentList.plus(it.data.orEmpty())
+                        gistListAdapter.submitList(updatedGistList)
+                    }
+                    ViewData.Status.ERROR -> {
+                        fragment_gist_list_progress_bar.gone()
+                    }
+                }
+            }
+        )
+    }
+
+    private fun observeSearchPagination(gistListViewModel: GistListViewModel) {
+        gistListViewModel.liveDataSearchPagination.observe(
+            viewLifecycleOwner, {
+                when (it?.status) {
+                    ViewData.Status.LOADING -> {
+                        fragment_gist_list_progress_bar.visible()
+                    }
+                    ViewData.Status.COMPLETE -> {
+                        fragment_gist_list_progress_bar.gone()
+                        val updatedGistList = gistListAdapter.currentList.plus(it.data.orEmpty())
+                        gistListAdapter.submitList(updatedGistList)
+                    }
+                    ViewData.Status.ERROR -> {
+                        fragment_gist_list_progress_bar.gone()
+                    }
+                }
+            }
+        )
+    }
+
     private fun observeFavorite(favoriteViewModel: FavoriteViewModel) {
         favoriteViewModel.liveDataAddFavorite.observe(viewLifecycleOwner, {
             when (it?.status) {
                 ViewData.Status.LOADING -> {
-                    showProgressDialog(it.data ?: "Loading")
+                    showProgressDialog(it.data ?: getString(R.string.dialog_loading))
                 }
                 ViewData.Status.SUCCESS -> {
                     dismissProgress()
@@ -225,6 +259,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
                         appCompatImageViewClose?.visible()
                         fragment_gist_list_recycler_view.visible()
                         fragment_gist_list_recycler_view.startShowAnimation()
+                        endlessRecyclerViewScrollListener.resetState()
                         gistListAdapter.submitList(it.data)
                     }
                     ViewData.Status.ERROR -> {
@@ -259,5 +294,18 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         startActivityForResult(Intent(context, DetailActivity::class.java).also {
             it.putExtra(GIST_ITEM_EXTRA, data)
         }, DETAIL_REQUEST_CODE)
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        if (s.isNullOrEmpty()) {
+            lastSearch = ""
+            gistListViewModel.fetchPublicGists()
+        }
+    }
+
+    override fun afterTextChanged(s: Editable?) {
     }
 }
