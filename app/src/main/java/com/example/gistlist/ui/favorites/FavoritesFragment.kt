@@ -13,7 +13,7 @@ import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ext.gone
 import com.example.gistlist.ext.startShowAnimation
 import com.example.gistlist.ext.visible
-import com.example.gistlist.ui.ViewData
+import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.base.BaseFragment
 import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.gistList.GistListAdapter

@@ -4,9 +4,9 @@ import androidx.lifecycle.LifecycleObserver
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.data.repository.GistRepository
 import com.example.gistlist.data.repository.RoomRepository
-import com.example.gistlist.ui.LiveEvent
-import com.example.gistlist.ui.ViewData
-import com.example.gistlist.ui.ViewData.Status.*
+import com.example.gistlist.ui.helper.LiveEvent
+import com.example.gistlist.ui.helper.ViewData
+import com.example.gistlist.ui.helper.ViewData.Status.*
 import com.example.gistlist.ui.base.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableObserver

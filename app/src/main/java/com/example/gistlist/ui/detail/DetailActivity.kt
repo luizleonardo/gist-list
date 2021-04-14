@@ -6,7 +6,7 @@ import android.widget.Toast
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ext.scaleAnimation
-import com.example.gistlist.ui.ViewData
+import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.base.BaseActivity
 import com.example.gistlist.ui.favorites.FavoriteViewModel
 import com.squareup.picasso.Picasso

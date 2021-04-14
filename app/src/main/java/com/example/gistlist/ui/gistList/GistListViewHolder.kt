@@ -1,14 +1,14 @@
 package com.example.gistlist.ui.gistList
 
 import android.view.View
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.AppCompatToggleButton
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ext.scaleAnimation
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.imageview.ShapeableImageView
+import com.example.gistlist.ui.helper.CircleTransform
 import com.squareup.picasso.Picasso
 
 class GistListViewHolder(
@@ -17,9 +17,7 @@ class GistListViewHolder(
     private val gistItemCallback: GistItemCallback?,
 ) : RecyclerView.ViewHolder(itemView) {
 
-    private val content: MaterialCardView =
-        itemView.findViewById(R.id.list_item_gist_card_view)
-    private val ownerAvatar: ShapeableImageView =
+    private val ownerAvatar: AppCompatImageView =
         itemView.findViewById(R.id.list_item_gist_owner_avatar)
     private val ownerName: AppCompatTextView =
         itemView.findViewById(R.id.list_item_gist_owner_name)
@@ -47,6 +45,9 @@ class GistListViewHolder(
         }
         Picasso.get()
             .load(data.owner?.avatarUrl)
+            .placeholder(R.drawable.vector_broken_image)
+            .error(R.drawable.vector_broken_image)
+            .transform(CircleTransform())
             .fit()
             .into(ownerAvatar)
         ownerName.text = data.owner?.login

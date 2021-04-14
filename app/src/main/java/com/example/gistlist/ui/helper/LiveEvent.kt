@@ -1,4 +1,4 @@
-package com.example.gistlist.ui
+package com.example.gistlist.ui.helper
 
 import androidx.annotation.MainThread
 import androidx.collection.ArraySet
