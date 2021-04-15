@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/custom_view_search_content"
     android:layout_width="match_parent"
-    android:layout_height="32dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="8dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
     app:cardBackgroundColor="@color/gray"
     app:cardCornerRadius="50dp">
 
@@ -14,13 +13,16 @@
         android:id="@+id/custom_view_search_view"
         style="@style/Theme.SearchView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:theme="@style/Theme.SearchView" />
 
     <ProgressBar
         android:id="@+id/custom_view_search_view_progress"
         style="@style/CustomSearchProgressView"
         android:layout_width="20dp"
-        android:layout_height="20dp" />
+        android:layout_height="20dp"
+        android:indeterminateTint="@color/primaryDarkColor"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </com.google.android.material.card.MaterialCardView>

@@ -17,8 +17,8 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class DetailActivity : BaseActivity() {
 
     companion object {
-        const val EXTRA_GIST_ITEM_VIEW = "gist_item_view_extra"
-        const val EXTRA_GIST_ITEM = "gist_item_extra"
+        const val EXTRA_GIST_ITEM_VIEW = "extra_gist_item_view"
+        const val EXTRA_GIST_ITEM = "extra_gist_item"
     }
 
     private var gistItem: GistItem? = null

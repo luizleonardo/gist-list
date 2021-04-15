@@ -3,17 +3,14 @@ package com.example.gistlist.ui.gistList
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
@@ -26,23 +23,19 @@ import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM_VIEW
 import com.example.gistlist.ui.favorites.FavoriteViewModel
-import com.example.gistlist.ui.gistList.RxSearchObservable.DEBOUNCE
 import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_gist_list.*
 import kotlinx.android.synthetic.main.fragment_gist_list.view.*
 import kotlinx.android.synthetic.main.layout_search_view.*
 import kotlinx.android.synthetic.main.layout_search_view.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
-import java.util.concurrent.TimeUnit
 
-class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
-    GistListViewHolder.GistItemCallback, TextWatcher {
+class GistListFragment : BaseFragment(),
+    GistListViewHolder.GistItemCallback,
+    HeaderViewHolder.SearchViewCallback {
 
     companion object {
         const val DETAIL_REQUEST_CODE = 1
@@ -59,12 +52,10 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var endlessRecyclerViewScrollListener: EndlessRecyclerViewScrollListener
 
-    private val gistListAdapter = GistListAdapter(this@GistListFragment, this@GistListFragment)
+    private val gistListAdapter = GistListAdapter(this@GistListFragment)
+    private val headerAdapter = HeaderAdapter(this@GistListFragment)
 
-    private val compositeDisposable = CompositeDisposable()
-    private var lastSearch: String? = null
-    private var appCompatImageViewClose: AppCompatImageView? = null
-    private var searchViewEditText: EditText? = null
+    private var lastSearch: String? = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -94,41 +85,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         super.setupView(view)
         setupSnackBar(view)
         setupRecyclerView(view)
-        setupSearchView(view)
         gistListViewModel.fetchPublicGists()
-    }
-
-    private fun setupSearchView(view: View) {
-        view.custom_view_search_view.apply {
-            maxWidth = Integer.MAX_VALUE
-            appCompatImageViewClose =
-                this.findViewById(R.id.search_close_btn) as? AppCompatImageView
-            searchViewEditText = this.findViewById(R.id.search_src_text) as? EditText
-            searchViewEditText?.addTextChangedListener(this@GistListFragment)
-            if (!lastSearch.isNullOrEmpty()) {
-                setQuery(lastSearch, false)
-                appCompatImageViewClose?.visible()
-            }
-            observeSearchView(this)
-        }
-    }
-
-    private fun observeSearchView(searchView: SearchView) {
-        compositeDisposable.add(RxSearchObservable.fromView(searchView)
-            .debounce(DEBOUNCE, TimeUnit.MILLISECONDS)
-            .filter { query -> query.isNotEmpty() && query != lastSearch }
-            .map { query -> query.toLowerCase(Locale.getDefault()).trim() }
-            .switchMap { query -> Observable.just(query) }
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    this.lastSearch = it
-                    gistListViewModel.searchByUsername(username = it)
-                },
-                {
-                    showSnackbar(getString(R.string.generic_error))
-                })
-        )
     }
 
     private fun setupRecyclerView(view: View) {
@@ -152,7 +109,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
                     }
                 }
             layoutManager = linearLayoutManager
-            adapter = gistListAdapter
+            adapter = ConcatAdapter(headerAdapter, gistListAdapter)
             addOnScrollListener(endlessRecyclerViewScrollListener)
         }
     }
@@ -260,18 +217,21 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
                 when (it?.status) {
                     ViewData.Status.LOADING -> {
                         custom_view_search_view_progress.visible()
-                        appCompatImageViewClose?.gone()
+                        custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
+                            ?.gone()
                     }
                     ViewData.Status.COMPLETE -> {
                         custom_view_search_view_progress.gone()
-                        appCompatImageViewClose?.visible()
+                        custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
+                            ?.gone()
                         fragment_gist_list_recycler_view.visible()
                         fragment_gist_list_recycler_view.startShowAnimation()
                         endlessRecyclerViewScrollListener.resetState()
                         gistListAdapter.submitList(it.data)
                     }
                     ViewData.Status.ERROR -> {
-                        appCompatImageViewClose?.visible()
+                        custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
+                            ?.gone()
                         custom_view_search_view_progress.gone()
                         fragment_gist_list_recycler_view.gone()
                         fragment_gist_list_progress_bar.gone()
@@ -310,16 +270,15 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         }, DETAIL_REQUEST_CODE, options.toBundle())
     }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    override fun onSearch(query: String) {
+        gistListViewModel.searchByUsername(username = query)
     }
 
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-        if (s.isNullOrEmpty()) {
-            lastSearch = ""
-            gistListViewModel.fetchPublicGists()
-        }
+    override fun onError(message: String) {
+        showSnackbar(message)
     }
 
-    override fun afterTextChanged(s: Editable?) {
+    override fun onTextEmpty() {
+        gistListViewModel.fetchPublicGists()
     }
 }

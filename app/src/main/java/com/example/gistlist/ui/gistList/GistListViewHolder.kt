@@ -14,7 +14,6 @@ import com.squareup.picasso.Picasso
 
 class GistListViewHolder(
     itemView: View,
-    private val favoriteCallback: FavoriteCallback?,
     private val gistItemCallback: GistItemCallback?,
 ) : RecyclerView.ViewHolder(itemView) {
 
@@ -39,10 +38,10 @@ class GistListViewHolder(
         favoriteButton.setOnCheckedChangeListener { button, checked ->
             button.scaleAnimation()
             if (checked) {
-                favoriteCallback?.onFavoriteAdd(data)
+                gistItemCallback?.onFavoriteAdd(data)
                 return@setOnCheckedChangeListener
             }
-            favoriteCallback?.onFavoriteRemove(data)
+            gistItemCallback?.onFavoriteRemove(data)
             return@setOnCheckedChangeListener
         }
         Picasso.get()
@@ -59,12 +58,9 @@ class GistListViewHolder(
         }
     }
 
-    interface FavoriteCallback {
+    interface GistItemCallback {
         fun onFavoriteAdd(data: GistItem)
         fun onFavoriteRemove(data: GistItem)
-    }
-
-    interface GistItemCallback {
         fun onGistItemClick(data: GistItem, ownerAvatar: AppCompatImageView)
     }
 

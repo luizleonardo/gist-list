@@ -7,13 +7,10 @@
     android:layout_height="match_parent"
     android:background="@drawable/drawable_gradient_bg">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/fragment_gist_list_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <include layout="@layout/layout_search_view" />
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/fragment_gist_list_recycler_view"
@@ -25,7 +22,7 @@
             tools:listitem="@layout/list_item_gist"
             tools:visibility="visible" />
 
-    </LinearLayout>
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/fragment_gist_list_progress_bar"

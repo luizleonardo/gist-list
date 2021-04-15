@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
@@ -14,17 +16,19 @@ import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ext.gone
 import com.example.gistlist.ext.startShowAnimation
 import com.example.gistlist.ext.visible
-import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.base.BaseFragment
 import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.gistList.GistListAdapter
+import com.example.gistlist.ui.gistList.GistListFragment
 import com.example.gistlist.ui.gistList.GistListViewHolder
+import com.example.gistlist.ui.helper.ViewData
+import com.example.gistlist.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.android.synthetic.main.fragment_favorites.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class FavoritesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
+class FavoritesFragment : BaseFragment(),
     GistListViewHolder.GistItemCallback {
 
     companion object {
@@ -36,7 +40,7 @@ class FavoritesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
 
     private val favoriteViewModel: FavoriteViewModel by viewModel()
 
-    private val gifListAdapter = GistListAdapter(this@FavoritesFragment, this@FavoritesFragment)
+    private val gifListAdapter = GistListAdapter(this@FavoritesFragment)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,6 +67,7 @@ class FavoritesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
 
     private fun setupRecyclerView(view: View) {
         view.fragment_favorite_recycler_view.apply {
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(
                 view.context,
                 RecyclerView.VERTICAL, false
@@ -140,9 +145,15 @@ class FavoritesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
     }
 
     override fun onGistItemClick(data: GistItem, ownerAvatar: AppCompatImageView) {
-        startActivity(Intent(context, DetailActivity::class.java).also {
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            activity as MainActivity,
+            ownerAvatar,
+            ViewCompat.getTransitionName(ownerAvatar).orEmpty()
+        )
+        startActivityForResult(Intent(context, DetailActivity::class.java).also {
+            it.putExtra(DetailActivity.EXTRA_GIST_ITEM_VIEW, ViewCompat.getTransitionName(ownerAvatar))
             it.putExtra(DetailActivity.EXTRA_GIST_ITEM, data)
-        })
+        }, GistListFragment.DETAIL_REQUEST_CODE, options.toBundle())
     }
 
 }

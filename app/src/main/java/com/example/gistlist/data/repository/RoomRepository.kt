@@ -1,10 +1,7 @@
 package com.example.gistlist.data.repository
 
 import com.example.gistlist.data.dao.GistDao
-import com.example.gistlist.data.entities.GistData
-import com.example.gistlist.data.entities.GistItem
-import com.example.gistlist.data.entities.GistOwner
-import com.example.gistlist.data.entities.OwnerData
+import com.example.gistlist.data.entities.*
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
@@ -41,7 +38,7 @@ class RoomRepository(private val dao: GistDao) {
 
     private fun transformGistItemToGistData(gistItem: GistItem): GistData =
         GistData(
-            id = gistItem.id ?: "",
+            id = gistItem.id.orEmpty(),
             url = gistItem.url,
             description = gistItem.description,
             owner = OwnerData(
@@ -49,7 +46,8 @@ class RoomRepository(private val dao: GistDao) {
                 id = gistItem.owner?.id,
                 avatarUrl = gistItem.owner?.avatarUrl
             ),
-            fileType = gistItem.files?.fileList?.firstOrNull()?.type
+            fileType = gistItem.files?.fileList?.firstOrNull()?.type,
+            fileName = gistItem.files?.fileList?.firstOrNull()?.filename
         )
 
     private fun transformGistDataToGistItem(imageDataList: List<GistData>?) =
@@ -63,7 +61,8 @@ class RoomRepository(private val dao: GistDao) {
                     login = it.owner?.login,
                     id = it.owner?.id,
                     avatarUrl = it.owner?.avatarUrl
-                )
+                ),
+                files = GistFileList(listOf(GistFile(filename = it.fileName, type = it.fileType)))
             )
         } ?: ArrayList()
 }

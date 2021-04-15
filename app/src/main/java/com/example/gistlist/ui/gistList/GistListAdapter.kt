@@ -8,7 +8,6 @@ import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 
 class GistListAdapter(
-    private val favoriteCallback: GistListViewHolder.FavoriteCallback,
     private val gistItemCallback: GistListViewHolder.GistItemCallback
 ) :
     ListAdapter<GistItem, GistListViewHolder>(
@@ -25,7 +24,6 @@ class GistListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GistListViewHolder {
         return GistListViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.list_item_gist, parent, false),
-            favoriteCallback,
             gistItemCallback
         )
     }

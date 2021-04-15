@@ -16,7 +16,9 @@ data class GistData(
     @Embedded
     val owner: OwnerData? = null,
     @ColumnInfo(name = "file_type")
-    val fileType: String? = null
+    val fileType: String? = null,
+    @ColumnInfo(name = "file_name")
+    val fileName: String?
 )
 
 data class OwnerData(
