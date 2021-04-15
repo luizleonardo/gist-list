@@ -4,6 +4,7 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.AppCompatToggleButton
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
@@ -29,8 +30,9 @@ class GistListViewHolder(
         itemView.findViewById(R.id.list_item_gist_button_favorite)
 
     fun bind(data: GistItem) {
+        ViewCompat.setTransitionName(ownerAvatar, data.owner?.login)
         itemView.setOnClickListener {
-            gistItemCallback?.onGistItemClick(data)
+            gistItemCallback?.onGistItemClick(data, ownerAvatar)
         }
         favoriteButton.setOnCheckedChangeListener(null)
         favoriteButton.isChecked = data.isFavorite
@@ -63,7 +65,7 @@ class GistListViewHolder(
     }
 
     interface GistItemCallback {
-        fun onGistItemClick(data: GistItem)
+        fun onGistItemClick(data: GistItem, ownerAvatar: AppCompatImageView)
     }
 
 }

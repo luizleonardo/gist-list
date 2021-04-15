@@ -6,9 +6,10 @@ import android.widget.Toast
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ext.scaleAnimation
-import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.base.BaseActivity
 import com.example.gistlist.ui.favorites.FavoriteViewModel
+import com.example.gistlist.ui.helper.ViewData
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -16,19 +17,23 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class DetailActivity : BaseActivity() {
 
     companion object {
-        const val GIST_ITEM_EXTRA = "gist_item_extra"
+        const val EXTRA_GIST_ITEM_VIEW = "gist_item_view_extra"
+        const val EXTRA_GIST_ITEM = "gist_item_extra"
     }
 
     private var gistItem: GistItem? = null
+    private var imageTransitionName: String? = null
 
     override fun layoutResource(): Int = R.layout.activity_detail
 
     private val favoriteViewModel: FavoriteViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        intent.extras?.getParcelable<GistItem>(GIST_ITEM_EXTRA)?.run {
-            gistItem = this
+        intent.extras?.run {
+            gistItem = this.getParcelable(EXTRA_GIST_ITEM)
+            imageTransitionName = this.getString(EXTRA_GIST_ITEM_VIEW)
         }
+        supportPostponeEnterTransition()
         super.onCreate(savedInstanceState)
 
         with(favoriteViewModel) {
@@ -43,7 +48,19 @@ class DetailActivity : BaseActivity() {
             setDisplayShowHomeEnabled(true)
         }
         gistItem?.run {
-            Picasso.get().load(this.owner?.avatarUrl).into(activity_detail_owner_avatar)
+            activity_detail_owner_avatar.transitionName = imageTransitionName
+            Picasso.get()
+                .load(this.owner?.avatarUrl)
+                .noFade()
+                .into(activity_detail_owner_avatar, object : Callback {
+                    override fun onSuccess() {
+                        supportStartPostponedEnterTransition()
+                    }
+
+                    override fun onError(e: Exception?) {
+                        supportStartPostponedEnterTransition()
+                    }
+                })
             activity_detail_description.text = this.description
             activity_detail_owner_name.text = this.owner?.login
             activity_detail_filename.text = this.files?.fileList?.firstOrNull()?.filename

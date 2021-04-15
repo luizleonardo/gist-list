@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -138,9 +139,9 @@ class FavoritesFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         favoriteViewModel.removeFavorite(data)
     }
 
-    override fun onGistItemClick(data: GistItem) {
+    override fun onGistItemClick(data: GistItem, ownerAvatar: AppCompatImageView) {
         startActivity(Intent(context, DetailActivity::class.java).also {
-            it.putExtra(DetailActivity.GIST_ITEM_EXTRA, data)
+            it.putExtra(DetailActivity.EXTRA_GIST_ITEM, data)
         })
     }
 

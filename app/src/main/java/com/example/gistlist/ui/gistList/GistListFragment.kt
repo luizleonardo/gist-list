@@ -12,6 +12,8 @@ import android.widget.EditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
@@ -21,10 +23,12 @@ import com.example.gistlist.ext.startShowAnimation
 import com.example.gistlist.ext.visible
 import com.example.gistlist.ui.base.BaseFragment
 import com.example.gistlist.ui.detail.DetailActivity
-import com.example.gistlist.ui.detail.DetailActivity.Companion.GIST_ITEM_EXTRA
+import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM
+import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM_VIEW
 import com.example.gistlist.ui.favorites.FavoriteViewModel
 import com.example.gistlist.ui.gistList.RxSearchObservable.DEBOUNCE
 import com.example.gistlist.ui.helper.ViewData
+import com.example.gistlist.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -86,6 +90,7 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
     }
 
     override fun setupView(view: View) {
+        postponeEnterTransition()
         super.setupView(view)
         setupSnackBar(view)
         setupRecyclerView(view)
@@ -137,7 +142,10 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
                 object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
                     override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
                         if (!lastSearch.isNullOrEmpty()) {
-                            gistListViewModel.searchByUsernamePagination(username = lastSearch, page = page)
+                            gistListViewModel.searchByUsernamePagination(
+                                username = lastSearch,
+                                page = page
+                            )
                             return
                         }
                         gistListViewModel.fetchPublicGistsPagination(page = page)
@@ -290,10 +298,16 @@ class GistListFragment : BaseFragment(), GistListViewHolder.FavoriteCallback,
         }
     }
 
-    override fun onGistItemClick(data: GistItem) {
+    override fun onGistItemClick(data: GistItem, ownerAvatar: AppCompatImageView) {
+        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+            activity as MainActivity,
+            ownerAvatar,
+            ViewCompat.getTransitionName(ownerAvatar).orEmpty()
+        )
         startActivityForResult(Intent(context, DetailActivity::class.java).also {
-            it.putExtra(GIST_ITEM_EXTRA, data)
-        }, DETAIL_REQUEST_CODE)
+            it.putExtra(EXTRA_GIST_ITEM_VIEW, ViewCompat.getTransitionName(ownerAvatar))
+            it.putExtra(EXTRA_GIST_ITEM, data)
+        }, DETAIL_REQUEST_CODE, options.toBundle())
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
