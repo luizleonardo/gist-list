@@ -1,4 +1,4 @@
-package com.example.gistlist.ui.gistList
+package com.example.gistlist.ui.gistList.header
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

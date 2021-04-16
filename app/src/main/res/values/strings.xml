@@ -14,4 +14,8 @@
     <string name="error_description">Something happened please try again later</string>
     <string name="error_no_internet_title">Internet Error</string>
     <string name="error_no_internet_description">Please check your internet connection and try again.</string>
+    <string name="empty_state_title">Ooops</string>
+    <string name="empty_state_description">The result is empty</string>
+    <string name="empty_state_search_description">The search result is empty</string>
+    <string name="empty_state_favorite_description">You dont have any favorite yet, just click on the heart icon and try it out!</string>
 </resources>

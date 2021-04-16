@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="default_custom_view_padding">32dp</dimen>
+</resources>

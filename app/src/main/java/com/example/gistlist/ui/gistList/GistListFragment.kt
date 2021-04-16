@@ -15,13 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ui.base.BaseFragment
+import com.example.gistlist.ui.custom.CustomViewError
+import com.example.gistlist.ui.custom.CustomViewError.Type
 import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM_VIEW
 import com.example.gistlist.ui.favorites.FavoriteViewModel
 import com.example.gistlist.ui.gistList.EndlessRecyclerViewScrollListener.Companion.PAGE_START
-import com.example.gistlist.ui.helper.CustomViewError
-import com.example.gistlist.ui.helper.CustomViewError.Type
+import com.example.gistlist.ui.gistList.footer.LoadingAdapter
+import com.example.gistlist.ui.gistList.header.HeaderAdapter
+import com.example.gistlist.ui.gistList.header.HeaderViewHolder
 import com.example.gistlist.ui.helper.ViewData.Status.*
 import com.example.gistlist.ui.helper.goneViews
 import com.example.gistlist.ui.helper.startShowAnimation
@@ -141,21 +144,29 @@ class GistListFragment : BaseFragment(),
             viewLifecycleOwner, {
                 when (it?.status) {
                     LOADING -> {
-                        goneViews(fragment_gist_list_recycler_view, fragment_gist_list_error)
+                        goneViews(
+                            fragment_gist_list_recycler_view,
+                            fragment_gist_list_error,
+                            fragment_gist_list_empty_state
+                        )
                         fragment_gist_list_progress_bar.visible()
                     }
                     COMPLETE -> {
                         goneViews(fragment_gist_list_progress_bar, fragment_gist_list_error)
-                        fragment_gist_list_recycler_view.visible()
-                        fragment_gist_list_recycler_view.startShowAnimation()
                         if (!it.data.isNullOrEmpty()) {
+                            fragment_gist_list_recycler_view.visible()
+                            fragment_gist_list_recycler_view.startShowAnimation()
                             gistListAdapter.submitList(it.data)
                         } else {
-                            //setupEmptyView()
+                            setupEmptyView()
                         }
                     }
                     ERROR -> {
-                        goneViews(fragment_gist_list_progress_bar, fragment_gist_list_recycler_view)
+                        goneViews(
+                            fragment_gist_list_progress_bar,
+                            fragment_gist_list_recycler_view,
+                            fragment_gist_list_empty_state
+                        )
                         fragment_gist_list_error.apply {
                             type(Type.GENERIC)
                             message(it.error?.message)
@@ -166,6 +177,14 @@ class GistListFragment : BaseFragment(),
                 }
             }
         )
+    }
+
+    private fun setupEmptyView(message: String? = null) {
+        fragment_gist_list_empty_state?.apply {
+            message(message)
+            build()
+            visible()
+        }
     }
 
     private fun observePublicGistListPagination(gistListViewModel: GistListViewModel) {
@@ -251,8 +270,12 @@ class GistListFragment : BaseFragment(),
                             custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
                         )
                         fragment_gist_list_recycler_view.visible()
-                        fragment_gist_list_recycler_view.startShowAnimation()
-                        if (!it.data.isNullOrEmpty()) gistListAdapter.submitList(it.data)
+                        gistListAdapter.submitList(it.data)
+                        if (!it.data.isNullOrEmpty()) {
+                            fragment_gist_list_recycler_view.startShowAnimation()
+                        } else {
+                            setupEmptyView(getString(R.string.empty_state_search_description))
+                        }
                     }
                     ERROR -> {
                         goneViews(

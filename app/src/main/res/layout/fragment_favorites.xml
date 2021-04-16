@@ -16,7 +16,15 @@
         tools:listitem="@layout/list_item_gist"
         tools:visibility="visible" />
 
-    <com.example.gistlist.ui.helper.CustomViewError
+    <com.example.gistlist.ui.custom.CustomViewEmptyState
+        android:id="@+id/fragment_favorite_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.example.gistlist.ui.custom.CustomViewError
         android:id="@+id/fragment_favorite_error"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

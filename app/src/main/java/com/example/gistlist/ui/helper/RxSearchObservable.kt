@@ -1,4 +1,4 @@
-package com.example.gistlist.ui.gistList
+package com.example.gistlist.ui.helper
 
 import androidx.appcompat.widget.SearchView
 import io.reactivex.Observable

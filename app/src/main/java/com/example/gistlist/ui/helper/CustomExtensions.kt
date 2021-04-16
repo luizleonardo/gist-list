@@ -6,7 +6,6 @@ import android.animation.PropertyValuesHolder
 import android.view.View
 import android.view.View.ALPHA
 import android.view.View.TRANSLATION_Y
-import android.view.animation.Animation
 import android.view.animation.Animation.*
 import android.view.animation.BounceInterpolator
 import android.view.animation.RotateAnimation
@@ -73,9 +72,9 @@ fun View.shakeAnimation() {
     startAnimation(RotateAnimation(
         10f,
         -10f,
-        Animation.RELATIVE_TO_SELF,
+        RELATIVE_TO_SELF,
         0.5f,
-        Animation.RELATIVE_TO_SELF,
+        RELATIVE_TO_SELF,
         0.5f
     ).also {
         it.duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()

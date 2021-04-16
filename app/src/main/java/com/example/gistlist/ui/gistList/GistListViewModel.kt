@@ -5,7 +5,7 @@ import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.data.repository.GistRepository
 import com.example.gistlist.data.repository.RoomRepository
 import com.example.gistlist.ui.base.BaseViewModel
-import com.example.gistlist.ui.helper.SingleLiveEvent
+import com.example.gistlist.ui.helper.LiveEvent
 import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.helper.ViewData.Status.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,13 +22,13 @@ class GistListViewModel(
         const val DEFAULT_PAGE_START = 0
     }
 
-    val liveDataGists = SingleLiveEvent<ViewData<List<GistItem>>>()
+    val liveDataGists = LiveEvent<ViewData<List<GistItem>>>()
 
-    val liveDataGistsPagination = SingleLiveEvent<ViewData<List<GistItem>>>()
+    val liveDataGistsPagination = LiveEvent<ViewData<List<GistItem>>>()
 
-    val liveDataSearch = SingleLiveEvent<ViewData<List<GistItem>>>()
+    val liveDataSearch = LiveEvent<ViewData<List<GistItem>>>()
 
-    val liveDataSearchPagination = SingleLiveEvent<ViewData<List<GistItem>>>()
+    val liveDataSearchPagination = LiveEvent<ViewData<List<GistItem>>>()
 
     fun fetchPublicGists() {
         compositeDisposable.add(

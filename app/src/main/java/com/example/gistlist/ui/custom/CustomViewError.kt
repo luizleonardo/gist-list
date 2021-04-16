@@ -1,15 +1,18 @@
-package com.example.gistlist.ui.helper
+package com.example.gistlist.ui.custom
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import androidx.core.widget.NestedScrollView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.example.gistlist.R
+import com.example.gistlist.ui.helper.shakeAnimation
+import com.example.gistlist.ui.helper.visible
 import kotlinx.android.synthetic.main.layout_error.view.*
 
 class CustomViewError @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : NestedScrollView(context, attrs, defStyleAttr), View.OnClickListener {
+) : ConstraintLayout(context, attrs, defStyleAttr), View.OnClickListener {
     enum class Type constructor(val value: Int) {
         NETWORKING(4353),
         GENERIC(2355);
@@ -21,6 +24,9 @@ class CustomViewError @JvmOverloads constructor(
 
     init {
         inflate(context, R.layout.layout_error, this)
+        background = ContextCompat.getDrawable(context, R.drawable.drawable_gradient_bg)
+        val padding = resources.getDimensionPixelOffset(R.dimen.default_custom_view_padding)
+        setPadding(padding, padding, padding, padding)
         error_button_retry.setOnClickListener(this@CustomViewError)
     }
 

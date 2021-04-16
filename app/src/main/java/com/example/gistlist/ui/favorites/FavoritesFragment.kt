@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ui.base.BaseFragment
+import com.example.gistlist.ui.custom.CustomViewError
 import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.gistList.GistListAdapter
 import com.example.gistlist.ui.gistList.GistListFragment
@@ -112,12 +113,25 @@ class FavoritesFragment : BaseFragment(),
             when (it?.status) {
                 ViewData.Status.LOADING -> {
                     fragment_favorite_progress_bar.visible()
-                    goneViews(fragment_favorite_error, fragment_favorite_recycler_view)
+                    goneViews(
+                        fragment_favorite_error,
+                        fragment_favorite_recycler_view,
+                        fragment_favorite_empty_state
+                    )
                 }
                 ViewData.Status.SUCCESS -> {
-                    goneViews(fragment_favorite_error, fragment_favorite_progress_bar)
+                    goneViews(
+                        fragment_favorite_error,
+                        fragment_favorite_progress_bar,
+                        fragment_favorite_empty_state
+                    )
                     if (it.data.isNullOrEmpty()) {
                         fragment_favorite_recycler_view.gone()
+                        fragment_favorite_empty_state.apply {
+                            message(getString(R.string.empty_state_favorite_description))
+                            build()
+                            visible()
+                        }
                     } else {
                         fragment_favorite_recycler_view.visible()
                         fragment_favorite_recycler_view.startShowAnimation()
@@ -127,7 +141,11 @@ class FavoritesFragment : BaseFragment(),
                     }
                 }
                 ViewData.Status.ERROR -> {
-                    goneViews(fragment_favorite_progress_bar, fragment_favorite_recycler_view)
+                    goneViews(
+                        fragment_favorite_progress_bar,
+                        fragment_favorite_recycler_view,
+                        fragment_favorite_empty_state
+                    )
                     fragment_favorite_error.apply {
                         type(CustomViewError.Type.GENERIC)
                         message(it.error?.message)
