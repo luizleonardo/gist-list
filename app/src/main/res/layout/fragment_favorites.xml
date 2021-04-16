@@ -7,23 +7,22 @@
     android:layout_height="match_parent"
     android:background="@drawable/drawable_gradient_bg">
 
-    <FrameLayout
-        android:id="@+id/fragment_favorite_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_favorite_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/list_item_gist"
+        tools:visibility="visible" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fragment_favorite_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/fragment_favorite_content"
-            app:layout_constraintEnd_toEndOf="@+id/fragment_favorite_content"
-            app:layout_constraintStart_toStartOf="@+id/fragment_favorite_content"
-            app:layout_constraintTop_toTopOf="@id/fragment_favorite_content"
-            tools:listitem="@layout/list_item_gist" />
-
-    </FrameLayout>
+    <com.example.gistlist.ui.helper.CustomViewError
+        android:id="@+id/fragment_favorite_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <ProgressBar
         android:id="@+id/fragment_favorite_progress_bar"

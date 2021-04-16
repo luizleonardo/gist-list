@@ -7,22 +7,24 @@
     android:layout_height="match_parent"
     android:background="@drawable/drawable_gradient_bg">
 
-    <FrameLayout
-        android:id="@+id/fragment_gist_list_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_gist_list_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:alpha="1"
+        tools:listitem="@layout/list_item_gist"
+        tools:visibility="visible" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/fragment_gist_list_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0"
-            android:visibility="gone"
-            tools:alpha="1"
-            tools:listitem="@layout/list_item_gist"
-            tools:visibility="visible" />
-
-    </FrameLayout>
+    <com.example.gistlist.ui.helper.CustomViewError
+        android:id="@+id/fragment_gist_list_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <ProgressBar
         android:id="@+id/fragment_gist_list_progress_bar"
@@ -30,10 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminateTint="@color/primaryDarkColor"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/fragment_gist_list_content"
-        app:layout_constraintEnd_toEndOf="@id/fragment_gist_list_content"
-        app:layout_constraintStart_toStartOf="@id/fragment_gist_list_content"
-        app:layout_constraintTop_toTopOf="@id/fragment_gist_list_content" />
+        android:visibility="gone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

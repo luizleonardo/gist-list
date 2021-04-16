@@ -8,4 +8,10 @@
     <string name="generic_error">Unknow error :(</string>
     <string name="activity_detail_label">Gist Detail</string>
     <string name="dialog_loading">Loading…</string>
+
+    <string name="error_button_retry">Try Again</string>
+    <string name="error_title">Error</string>
+    <string name="error_description">Something happened please try again later</string>
+    <string name="error_no_internet_title">Internet Error</string>
+    <string name="error_no_internet_description">Please check your internet connection and try again.</string>
 </resources>

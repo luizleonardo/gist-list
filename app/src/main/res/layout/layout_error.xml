@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:parentTag="android.widget.FrameLayout">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/error_content_root"
+        style="@style/Error.Content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/drawable_gradient_bg"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/error_image_view_icon"
+            style="@style/Error.ImageView.Icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/error_text_view_title"
+            app:layout_constraintDimensionRatio="H,16:9"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:srcCompat="@drawable/vector_error"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/error_text_view_title"
+            style="@style/Error.TextView.Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/error_text_view_message"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/error_image_view_icon" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/error_text_view_message"
+            style="@style/Error.TextView.Message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/error_button_retry"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/error_text_view_title"
+            tools:text="Error happened" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/error_button_retry"
+            style="@style/Error.Button.Retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/error_text_view_message"
+            tools:visibility="visible" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</merge>

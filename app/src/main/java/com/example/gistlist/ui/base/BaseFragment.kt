@@ -36,6 +36,8 @@ abstract class BaseFragment : Fragment() {
         setupAlertDialog(view)
     }
 
+    fun snackBarTextView() = snackBar?.view?.findViewById<AppCompatTextView>(R.id.snackbar_text)
+
     private fun setupAlertDialog(view: View) {
         val builder = AlertDialog.Builder(view.context)
         builder.setView(layoutInflater.inflate(R.layout.custom_dialog, null))

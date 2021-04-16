@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.ext.gone
+import com.example.gistlist.ext.goneViews
 import com.example.gistlist.ext.startShowAnimation
 import com.example.gistlist.ext.visible
 import com.example.gistlist.ui.base.BaseFragment
@@ -21,15 +21,18 @@ import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.gistList.GistListAdapter
 import com.example.gistlist.ui.gistList.GistListFragment
 import com.example.gistlist.ui.gistList.GistListViewHolder
+import com.example.gistlist.ui.helper.CustomViewError
 import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.android.synthetic.main.fragment_favorites.view.*
+import kotlinx.android.synthetic.main.fragment_gist_list.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class FavoritesFragment : BaseFragment(),
-    GistListViewHolder.GistItemCallback {
+    GistListViewHolder.GistItemCallback,
+    CustomViewError.Callback {
 
     companion object {
         @JvmStatic
@@ -63,6 +66,7 @@ class FavoritesFragment : BaseFragment(),
         setupRecyclerView(view)
         setupSnackBar(view)
         favoriteViewModel.getFavorites()
+        fragment_favorite_error.click(this@FavoritesFragment)
     }
 
     private fun setupRecyclerView(view: View) {
@@ -88,20 +92,19 @@ class FavoritesFragment : BaseFragment(),
         favoriteViewModel.liveDataAddFavorite.observe(viewLifecycleOwner, {
             when (it?.status) {
                 ViewData.Status.LOADING -> {
-                    showProgressDialog(it.data ?: "Loading")
+                    showProgressDialog(it.data ?: getString(R.string.dialog_loading))
                 }
                 ViewData.Status.SUCCESS -> {
                     dismissProgress()
                     snackBar?.run {
                         if (!isShown) this.show()
-                        this.view.findViewById<AppCompatTextView>(R.id.snackbar_text).text = it.data
+                        snackBarTextView()?.text = it.data
                     }
                 }
                 ViewData.Status.ERROR -> {
                     dismissProgress()
                     snackBar?.run {
-                        this.view.findViewById<AppCompatTextView>(R.id.snackbar_text).text =
-                            it.error?.message
+                        snackBarTextView()?.text = it.error?.message
                         if (!isShown) this.show() else this.dismiss()
                     }
                 }
@@ -114,10 +117,10 @@ class FavoritesFragment : BaseFragment(),
             when (it?.status) {
                 ViewData.Status.LOADING -> {
                     fragment_favorite_progress_bar.visible()
-                    fragment_favorite_recycler_view.gone()
+                    goneViews(fragment_favorite_error, fragment_favorite_recycler_view)
                 }
                 ViewData.Status.SUCCESS -> {
-                    fragment_favorite_progress_bar.gone()
+                    goneViews(fragment_favorite_error, fragment_favorite_progress_bar)
                     if (it.data.isNullOrEmpty()) {
                         fragment_favorite_recycler_view.gone()
                     } else {
@@ -129,8 +132,13 @@ class FavoritesFragment : BaseFragment(),
                     }
                 }
                 ViewData.Status.ERROR -> {
-                    fragment_favorite_progress_bar.gone()
-                    fragment_favorite_recycler_view.gone()
+                    goneViews(fragment_favorite_progress_bar, fragment_favorite_recycler_view)
+                    fragment_favorite_error.apply {
+                        type(CustomViewError.Type.GENERIC)
+                        message(it.error?.message)
+                        build()
+                        visible()
+                    }
                 }
             }
         })
@@ -151,9 +159,15 @@ class FavoritesFragment : BaseFragment(),
             ViewCompat.getTransitionName(ownerAvatar).orEmpty()
         )
         startActivityForResult(Intent(context, DetailActivity::class.java).also {
-            it.putExtra(DetailActivity.EXTRA_GIST_ITEM_VIEW, ViewCompat.getTransitionName(ownerAvatar))
+            it.putExtra(
+                DetailActivity.EXTRA_GIST_ITEM_VIEW,
+                ViewCompat.getTransitionName(ownerAvatar)
+            )
             it.putExtra(DetailActivity.EXTRA_GIST_ITEM, data)
         }, GistListFragment.DETAIL_REQUEST_CODE, options.toBundle())
     }
 
+    override fun onErrorClickRetry() {
+        favoriteViewModel.getFavorites()
+    }
 }

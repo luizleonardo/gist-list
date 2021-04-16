@@ -12,8 +12,13 @@ class HeaderAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
         return HeaderViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.layout_search_view, parent, false),
+            LayoutInflater
+                .from(parent.context)
+                .inflate(
+                    R.layout.layout_search_view,
+                    parent,
+                    false
+                ),
             searchViewCallback
         )
     }

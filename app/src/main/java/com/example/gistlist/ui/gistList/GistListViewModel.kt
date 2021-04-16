@@ -4,10 +4,10 @@ import androidx.lifecycle.LifecycleObserver
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.data.repository.GistRepository
 import com.example.gistlist.data.repository.RoomRepository
-import com.example.gistlist.ui.helper.LiveEvent
+import com.example.gistlist.ui.base.BaseViewModel
+import com.example.gistlist.ui.helper.SingleLiveEvent
 import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.helper.ViewData.Status.*
-import com.example.gistlist.ui.base.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
@@ -22,13 +22,13 @@ class GistListViewModel(
         const val DEFAULT_PAGE_START = 0
     }
 
-    val liveDataGists = LiveEvent<ViewData<List<GistItem>>>()
+    val liveDataGists = SingleLiveEvent<ViewData<List<GistItem>>>()
 
-    val liveDataGistsPagination = LiveEvent<ViewData<List<GistItem>>>()
+    val liveDataGistsPagination = SingleLiveEvent<ViewData<List<GistItem>>>()
 
-    val liveDataSearch = LiveEvent<ViewData<List<GistItem>>>()
+    val liveDataSearch = SingleLiveEvent<ViewData<List<GistItem>>>()
 
-    val liveDataSearchPagination = LiveEvent<ViewData<List<GistItem>>>()
+    val liveDataSearchPagination = SingleLiveEvent<ViewData<List<GistItem>>>()
 
     fun fetchPublicGists() {
         compositeDisposable.add(
@@ -63,7 +63,10 @@ class GistListViewModel(
         )
     }
 
-    fun fetchPublicGistsPagination(perPage: Int = DEFAULT_PER_PAGE, page: Int = DEFAULT_PAGE_START) {
+    fun fetchPublicGistsPagination(
+        perPage: Int = DEFAULT_PER_PAGE,
+        page: Int = DEFAULT_PAGE_START
+    ) {
         compositeDisposable.add(
             giphyRepository.fetchPublicGists(perPage, page)
                 .flatMap(
@@ -89,7 +92,7 @@ class GistListViewModel(
 
                     override fun onComplete() {
                         liveDataGistsPagination.value =
-                            ViewData(status = COMPLETE, data = liveDataGists.value?.data)
+                            ViewData(status = COMPLETE, data = liveDataGistsPagination.value?.data)
                     }
 
                 })
@@ -129,7 +132,11 @@ class GistListViewModel(
         )
     }
 
-    fun searchByUsernamePagination(username: String?, perPage: Int = DEFAULT_PER_PAGE, page: Int = DEFAULT_PAGE_START) {
+    fun searchByUsernamePagination(
+        username: String?,
+        perPage: Int = DEFAULT_PER_PAGE,
+        page: Int = DEFAULT_PAGE_START
+    ) {
         compositeDisposable.add(
             giphyRepository.search(username, perPage, page)
                 .flatMap(
@@ -155,7 +162,7 @@ class GistListViewModel(
 
                     override fun onComplete() {
                         liveDataSearchPagination.value =
-                            ViewData(status = COMPLETE, data = liveDataSearch.value?.data)
+                            ViewData(status = COMPLETE, data = liveDataSearchPagination.value?.data)
                     }
                 })
         )

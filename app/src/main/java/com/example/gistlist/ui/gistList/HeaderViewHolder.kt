@@ -72,6 +72,7 @@ class HeaderViewHolder(
                     searchViewCallback?.onSearch(it)
                 },
                 {
+                    this.lastSearch = ""
                     searchViewCallback?.onError(itemView.context.getString(R.string.generic_error))
                 })
         )

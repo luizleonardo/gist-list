@@ -3,10 +3,10 @@ package com.example.gistlist.ui.favorites
 import androidx.lifecycle.LifecycleObserver
 import com.example.gistlist.data.entities.GistItem
 import com.example.gistlist.data.repository.RoomRepository
-import com.example.gistlist.ui.helper.LiveEvent
+import com.example.gistlist.ui.base.BaseViewModel
+import com.example.gistlist.ui.helper.SingleLiveEvent
 import com.example.gistlist.ui.helper.ViewData
 import com.example.gistlist.ui.helper.ViewData.Status.*
-import com.example.gistlist.ui.base.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
@@ -14,9 +14,9 @@ import io.reactivex.schedulers.Schedulers
 class FavoriteViewModel(private val roomRepository: RoomRepository) : BaseViewModel(),
     LifecycleObserver {
 
-    val liveDataAddFavorite = LiveEvent<ViewData<String>>()
+    val liveDataAddFavorite = SingleLiveEvent<ViewData<String>>()
 
-    val liveDataFavoritesList = LiveEvent<ViewData<List<GistItem>>>()
+    val liveDataFavoritesList = SingleLiveEvent<ViewData<List<GistItem>>>()
 
     fun addFavorite(data: GistItem) {
         compositeDisposable.add(

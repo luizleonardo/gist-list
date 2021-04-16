@@ -43,4 +43,39 @@
         <item name="android:visibility">visible</item>
     </style>
 
+    <style name="Error.Content" parent="">
+        <item name="android:padding">32dp</item>
+    </style>
+
+    <style name="Error.ImageView.Icon" parent="">
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_marginBottom">32dp</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Error.TextView.Title" parent="">
+        <item name="android:textSize">24sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:text">@string/error_title</item>
+    </style>
+
+    <style name="Error.TextView.Message" parent="">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:maxLines">4</item>
+        <item name="android:gravity">center</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+    </style>
+
+    <style name="Error.Button.Retry" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:minWidth">350dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:background">@color/dark_gray</item>
+        <item name="android:text">@string/error_button_retry</item>
+    </style>
+
 </resources>

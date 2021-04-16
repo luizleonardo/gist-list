@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.ConcatAdapter
@@ -15,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
-import com.example.gistlist.ext.gone
+import com.example.gistlist.ext.goneViews
 import com.example.gistlist.ext.startShowAnimation
 import com.example.gistlist.ext.visible
 import com.example.gistlist.ui.base.BaseFragment
@@ -23,7 +22,10 @@ import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM_VIEW
 import com.example.gistlist.ui.favorites.FavoriteViewModel
-import com.example.gistlist.ui.helper.ViewData
+import com.example.gistlist.ui.gistList.EndlessRecyclerViewScrollListener.Companion.PAGE_START
+import com.example.gistlist.ui.helper.CustomViewError
+import com.example.gistlist.ui.helper.CustomViewError.Type
+import com.example.gistlist.ui.helper.ViewData.Status.*
 import com.example.gistlist.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_gist_list.*
@@ -35,7 +37,8 @@ import java.util.*
 
 class GistListFragment : BaseFragment(),
     GistListViewHolder.GistItemCallback,
-    HeaderViewHolder.SearchViewCallback {
+    HeaderViewHolder.SearchViewCallback,
+    CustomViewError.Callback {
 
     companion object {
         const val DETAIL_REQUEST_CODE = 1
@@ -54,8 +57,10 @@ class GistListFragment : BaseFragment(),
 
     private val gistListAdapter = GistListAdapter(this@GistListFragment)
     private val headerAdapter = HeaderAdapter(this@GistListFragment)
+    private var loadingAdapter = LoadingAdapter()
 
     private var lastSearch: String? = ""
+    private var nextPage: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,6 +90,7 @@ class GistListFragment : BaseFragment(),
         super.setupView(view)
         setupSnackBar(view)
         setupRecyclerView(view)
+        fragment_gist_list_error.click(this@GistListFragment)
         gistListViewModel.fetchPublicGists()
     }
 
@@ -97,7 +103,8 @@ class GistListFragment : BaseFragment(),
             )
             endlessRecyclerViewScrollListener =
                 object : EndlessRecyclerViewScrollListener(linearLayoutManager) {
-                    override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                    override fun onLoadMore(page: Int) {
+                        nextPage = page + 1
                         if (!lastSearch.isNullOrEmpty()) {
                             gistListViewModel.searchByUsernamePagination(
                                 username = lastSearch,
@@ -109,7 +116,7 @@ class GistListFragment : BaseFragment(),
                     }
                 }
             layoutManager = linearLayoutManager
-            adapter = ConcatAdapter(headerAdapter, gistListAdapter)
+            adapter = ConcatAdapter(headerAdapter, gistListAdapter, loadingAdapter)
             addOnScrollListener(endlessRecyclerViewScrollListener)
         }
     }
@@ -122,10 +129,10 @@ class GistListFragment : BaseFragment(),
         )
     }
 
-    private fun showSnackbar(message: String?) {
+    private fun showSnackBar(message: String?) {
         snackBar?.run {
             if (!isShown) this.show() else this.dismiss()
-            this.view.findViewById<AppCompatTextView>(R.id.snackbar_text).text = message
+            snackBarTextView()?.text = message
         }
     }
 
@@ -133,20 +140,28 @@ class GistListFragment : BaseFragment(),
         gistListViewModel.liveDataGists.observe(
             viewLifecycleOwner, {
                 when (it?.status) {
-                    ViewData.Status.LOADING -> {
+                    LOADING -> {
+                        goneViews(fragment_gist_list_recycler_view, fragment_gist_list_error)
                         fragment_gist_list_progress_bar.visible()
-                        fragment_gist_list_recycler_view.gone()
                     }
-                    ViewData.Status.COMPLETE -> {
-                        fragment_gist_list_progress_bar.gone()
+                    COMPLETE -> {
+                        goneViews(fragment_gist_list_progress_bar, fragment_gist_list_error)
                         fragment_gist_list_recycler_view.visible()
                         fragment_gist_list_recycler_view.startShowAnimation()
-                        endlessRecyclerViewScrollListener.resetState()
-                        gistListAdapter.submitList(it.data)
+                        if (!it.data.isNullOrEmpty()) {
+                            gistListAdapter.submitList(it.data)
+                        } else {
+                            //setupEmptyView()
+                        }
                     }
-                    ViewData.Status.ERROR -> {
-                        fragment_gist_list_progress_bar.gone()
-                        fragment_gist_list_recycler_view.gone()
+                    ERROR -> {
+                        goneViews(fragment_gist_list_progress_bar, fragment_gist_list_recycler_view)
+                        fragment_gist_list_error.apply {
+                            type(Type.GENERIC)
+                            message(it.error?.message)
+                            build()
+                            visible()
+                        }
                     }
                 }
             }
@@ -157,36 +172,44 @@ class GistListFragment : BaseFragment(),
         gistListViewModel.liveDataGistsPagination.observe(
             viewLifecycleOwner, {
                 when (it?.status) {
-                    ViewData.Status.LOADING -> {
-                        fragment_gist_list_progress_bar.visible()
+                    LOADING -> {
+                        loadingAdapter.isPaging = true
                     }
-                    ViewData.Status.COMPLETE -> {
-                        fragment_gist_list_progress_bar.gone()
-                        val updatedGistList = gistListAdapter.currentList.plus(it.data.orEmpty())
-                        gistListAdapter.submitList(updatedGistList)
+                    COMPLETE -> {
+                        loadingAdapter.isPaging = false
+                        updateRecycleViewItems(it.data)
                     }
-                    ViewData.Status.ERROR -> {
-                        fragment_gist_list_progress_bar.gone()
+                    ERROR -> {
+                        loadingAdapter.isPaging = false
                     }
                 }
             }
         )
     }
 
+    private fun updateRecycleViewItems(data: List<GistItem>?) {
+        if (!data.isNullOrEmpty()) {
+            val updatedGistList =
+                gistListAdapter.currentList.plus(data.orEmpty())
+            gistListAdapter.submitList(updatedGistList)
+            endlessRecyclerViewScrollListener.nextPage(nextPage)
+            endlessRecyclerViewScrollListener.stopPaging()
+        }
+    }
+
     private fun observeSearchPagination(gistListViewModel: GistListViewModel) {
         gistListViewModel.liveDataSearchPagination.observe(
             viewLifecycleOwner, {
                 when (it?.status) {
-                    ViewData.Status.LOADING -> {
-                        fragment_gist_list_progress_bar.visible()
+                    LOADING -> {
+                        loadingAdapter.isPaging = true
                     }
-                    ViewData.Status.COMPLETE -> {
-                        fragment_gist_list_progress_bar.gone()
-                        val updatedGistList = gistListAdapter.currentList.plus(it.data.orEmpty())
-                        gistListAdapter.submitList(updatedGistList)
+                    COMPLETE -> {
+                        loadingAdapter.isPaging = false
+                        updateRecycleViewItems(it.data)
                     }
-                    ViewData.Status.ERROR -> {
-                        fragment_gist_list_progress_bar.gone()
+                    ERROR -> {
+                        loadingAdapter.isPaging = false
                     }
                 }
             }
@@ -196,16 +219,16 @@ class GistListFragment : BaseFragment(),
     private fun observeFavorite(favoriteViewModel: FavoriteViewModel) {
         favoriteViewModel.liveDataAddFavorite.observe(viewLifecycleOwner, {
             when (it?.status) {
-                ViewData.Status.LOADING -> {
+                LOADING -> {
                     showProgressDialog(it.data ?: getString(R.string.dialog_loading))
                 }
-                ViewData.Status.SUCCESS -> {
+                SUCCESS -> {
                     dismissProgress()
-                    showSnackbar(it.data)
+                    showSnackBar(it.data)
                 }
-                ViewData.Status.ERROR -> {
+                ERROR -> {
                     dismissProgress()
-                    showSnackbar(it.error?.message)
+                    showSnackBar(it.error?.message)
                 }
             }
         })
@@ -215,26 +238,35 @@ class GistListFragment : BaseFragment(),
         gifListViewModel.liveDataSearch.observe(
             viewLifecycleOwner, {
                 when (it?.status) {
-                    ViewData.Status.LOADING -> {
+                    LOADING -> {
+                        goneViews(
+                            fragment_gist_list_error,
+                            custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
+                        )
                         custom_view_search_view_progress.visible()
-                        custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
-                            ?.gone()
                     }
-                    ViewData.Status.COMPLETE -> {
-                        custom_view_search_view_progress.gone()
-                        custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
-                            ?.gone()
+                    COMPLETE -> {
+                        goneViews(
+                            custom_view_search_view_progress,
+                            custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
+                        )
                         fragment_gist_list_recycler_view.visible()
                         fragment_gist_list_recycler_view.startShowAnimation()
-                        endlessRecyclerViewScrollListener.resetState()
-                        gistListAdapter.submitList(it.data)
+                        if (!it.data.isNullOrEmpty()) gistListAdapter.submitList(it.data)
                     }
-                    ViewData.Status.ERROR -> {
-                        custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn)
-                            ?.gone()
-                        custom_view_search_view_progress.gone()
-                        fragment_gist_list_recycler_view.gone()
-                        fragment_gist_list_progress_bar.gone()
+                    ERROR -> {
+                        goneViews(
+                            custom_view_search_view.findViewById<AppCompatImageView>(R.id.search_close_btn),
+                            fragment_gist_list_progress_bar,
+                            custom_view_search_view_progress,
+                            fragment_gist_list_recycler_view
+                        )
+                        fragment_gist_list_error.apply {
+                            type(Type.GENERIC)
+                            message(it.error?.message)
+                            build()
+                            visible()
+                        }
                     }
                 }
             }
@@ -271,14 +303,21 @@ class GistListFragment : BaseFragment(),
     }
 
     override fun onSearch(query: String) {
+        lastSearch = query
+        endlessRecyclerViewScrollListener.nextPage(PAGE_START)
         gistListViewModel.searchByUsername(username = query)
     }
 
     override fun onError(message: String) {
-        showSnackbar(message)
+        lastSearch = ""
+        showSnackBar(message)
     }
 
     override fun onTextEmpty() {
+        gistListViewModel.fetchPublicGists()
+    }
+
+    override fun onErrorClickRetry() {
         gistListViewModel.fetchPublicGists()
     }
 }
