@@ -2,8 +2,8 @@ package com.example.gistlist.ui.gistList
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gistlist.ext.gone
-import com.example.gistlist.ext.visible
+import com.example.gistlist.ui.helper.gone
+import com.example.gistlist.ui.helper.visible
 import kotlinx.android.synthetic.main.layout_loading.view.*
 
 class LoadingViewHolder(

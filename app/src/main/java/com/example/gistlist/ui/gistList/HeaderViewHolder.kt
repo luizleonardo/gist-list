@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
-import com.example.gistlist.ext.visible
+import com.example.gistlist.ui.helper.visible
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

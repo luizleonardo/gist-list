@@ -14,9 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gistlist.R
 import com.example.gistlist.data.entities.GistItem
-import com.example.gistlist.ext.goneViews
-import com.example.gistlist.ext.startShowAnimation
-import com.example.gistlist.ext.visible
 import com.example.gistlist.ui.base.BaseFragment
 import com.example.gistlist.ui.detail.DetailActivity
 import com.example.gistlist.ui.detail.DetailActivity.Companion.EXTRA_GIST_ITEM
@@ -26,6 +23,9 @@ import com.example.gistlist.ui.gistList.EndlessRecyclerViewScrollListener.Compan
 import com.example.gistlist.ui.helper.CustomViewError
 import com.example.gistlist.ui.helper.CustomViewError.Type
 import com.example.gistlist.ui.helper.ViewData.Status.*
+import com.example.gistlist.ui.helper.goneViews
+import com.example.gistlist.ui.helper.startShowAnimation
+import com.example.gistlist.ui.helper.visible
 import com.example.gistlist.ui.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_gist_list.*

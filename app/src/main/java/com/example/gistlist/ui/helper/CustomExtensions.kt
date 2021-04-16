@@ -1,4 +1,4 @@
-package com.example.gistlist.ext
+package com.example.gistlist.ui.helper
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator

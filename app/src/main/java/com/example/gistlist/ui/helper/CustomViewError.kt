@@ -5,8 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.widget.NestedScrollView
 import com.example.gistlist.R
-import com.example.gistlist.ext.shakeAnimation
-import com.example.gistlist.ext.visible
 import kotlinx.android.synthetic.main.layout_error.view.*
 
 class CustomViewError @JvmOverloads constructor(
