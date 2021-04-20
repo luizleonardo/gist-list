@@ -18,7 +18,7 @@ data class GistData(
     @ColumnInfo(name = "file_type")
     val fileType: String? = null,
     @ColumnInfo(name = "file_name")
-    val fileName: String?
+    val fileName: String? = null
 )
 
 data class OwnerData(

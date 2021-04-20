@@ -95,4 +95,11 @@ dependencies {
     testImplementation "junit:junit:$project.ext.junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$project.ext.junitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$project.ext.espressoCoreVersion"
+    testImplementation "androidx.test:core:$project.ext.testCoreVersion"
+    testImplementation "org.mockito:mockito-core:$project.ext.mockitoCoreVersion"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$project.ext.okHtppVersion"
+    testImplementation "io.mockk:mockk:$project.ext.mockkVersion"
+    testImplementation "android.arch.core:core-testing:$project.ext.coreTestingVersion"
+    testImplementation "org.robolectric:robolectric:$project.ext.robolectricVersion"
+
 }

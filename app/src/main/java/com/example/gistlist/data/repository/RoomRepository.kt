@@ -36,7 +36,7 @@ class RoomRepository(private val dao: GistDao) {
                 .subscribe()
         }
 
-    private fun transformGistItemToGistData(gistItem: GistItem): GistData =
+    fun transformGistItemToGistData(gistItem: GistItem): GistData =
         GistData(
             id = gistItem.id.orEmpty(),
             url = gistItem.url,
@@ -50,7 +50,7 @@ class RoomRepository(private val dao: GistDao) {
             fileName = gistItem.files?.fileList?.firstOrNull()?.filename
         )
 
-    private fun transformGistDataToGistItem(imageDataList: List<GistData>?) =
+    fun transformGistDataToGistItem(imageDataList: List<GistData>?) =
         imageDataList?.map {
             GistItem(
                 id = it.id,
